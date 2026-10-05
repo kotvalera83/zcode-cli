@@ -1,6 +1,6 @@
 {
   "name": "zcode-app-cli",
-  "version": "3.7.7-10",
+  "version": "3.7.7-12",
   "description": "Unofficial terminal client for the ZCode agent runtime",
   "keywords": [
     "agent",
@@ -27,10 +27,12 @@
   },
   "type": "module",
   "bin": {
-    "zcode": "bin/zcode.js"
+    "zcode": "bin/zcode.js",
+    "zcode-relay": "relay/dist/zcode-relay.js"
   },
   "files": [
     "bin/zcode.js",
+    "relay/dist/zcode-relay.js",
     "vendor",
     "config.example.json",
     "zcode-runtime.lock.json",
@@ -40,7 +42,9 @@
   "scripts": {
     "build": "tsdown",
     "build:launcher": "tsdown --filter launcher",
+    "build:relay": "tsdown --filter relay",
     "build:tui": "tsdown --filter tui",
+    "relay": "bun src/relay/main.ts",
     "bench:tui-memory": "bun --expose-gc scripts/bench-tui-memory.ts",
     "bench:tui-stream": "bun scripts/bench-tui-stream.ts",
     "dev": "bun run sync:local && ZCODE_NODE=node bun bin/zcode.ts",
