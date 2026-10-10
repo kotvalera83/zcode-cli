@@ -30,6 +30,7 @@ const runtimePath = join(packageRoot, "vendor", "zcode.cjs");
 const launcherPath = join(packageRoot, "bin", "zcode.js");
 const defaultModelRetryMaxRetries = "5";
 const defaultBrowserUseArgument = "--browser-use=headless";
+const validBrowserUseValues = new Set(["headless", "persistent"]);
 const tuiRuntimeLogLimitBytes = 2 * 1024 * 1024;
 const versionArguments = new Set(["version", "--version", "-v"]);
 const runtimeBooleanOptions = new Set([
@@ -140,9 +141,16 @@ function inspectRuntimeInvocation(args: string[]): RuntimeInvocationInspection {
       const inlineValue = option.length !== argument.length;
       if (option === "--browser-use") {
         explicitBrowserUse = true;
-        if (!inlineValue) {
+        if (inlineValue) {
+          const value = argument.slice(option.length + 1);
+          if (!validBrowserUseValues.has(value)) invalid = true;
+        } else {
           if (index + 1 >= args.length || args[index + 1]!.startsWith("-")) invalid = true;
-          else index += 1;
+          else {
+            const value = args[index + 1]!;
+            if (!validBrowserUseValues.has(value)) invalid = true;
+            else index += 1;
+          }
         }
         continue;
       }
