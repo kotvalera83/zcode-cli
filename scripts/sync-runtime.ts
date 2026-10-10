@@ -67,6 +67,8 @@ export interface RuntimeCommit {
 
 type ManifestFetcher = (url: string, init?: RequestInit) => Promise<string>;
 
+const validArchitectures = new Set(["x64", "arm64", "x86_64", "aarch64"]);
+
 export function parseArgs(argv: string[]): SyncOptions {
   const result: SyncOptions = { platform: "linux", arch: "x64" };
   for (let index = 0; index < argv.length; index += 1) {
@@ -82,6 +84,11 @@ export function parseArgs(argv: string[]): SyncOptions {
       result.platform = value;
       index += 1;
     } else if (key === "--arch" && value) {
+      if (!validArchitectures.has(value)) {
+        throw new Error(
+          `Invalid architecture: ${value}. Valid values: ${Array.from(validArchitectures).join(", ")}`
+        );
+      }
       result.arch = value;
       index += 1;
     } else if (key === "--version" && value) {
@@ -93,6 +100,15 @@ export function parseArgs(argv: string[]): SyncOptions {
   }
   if (result.app && result.lock) throw new Error("--app and --lock cannot be used together.");
   if (result.version && !result.app) throw new Error("--version can only be used with --app.");
+  
+  const envArch = process.env.ZCODE_RUNTIME_ARCH?.trim();
+  if (envArch && !validArchitectures.has(envArch)) {
+    throw new Error(
+      `Invalid ZCODE_RUNTIME_ARCH: ${envArch}. Valid values: ${Array.from(validArchitectures).join(", ")}`
+    );
+  }
+  if (envArch) result.arch = envArch;
+  
   return result;
 }
 
