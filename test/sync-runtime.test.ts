@@ -40,7 +40,7 @@ describe("runtime synchronization", () => {
     const release = parseReleaseVersion(String(packageJson.version));
 
     // Local fork pin: linux-arm64 for the Raspberry Pi build; upstream CI pins x64.
-    const expectedArch = process.env.ZCODE_RUNTIME_ARCH ?? "arm64";
+    const expectedArch = process.env.ZCODE_RUNTIME_ARCH ?? (process.arch === "arm64" ? "arm64" : "x64");
 
     expect(lock).toMatchObject({
       schemaVersion: 1,

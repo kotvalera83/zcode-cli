@@ -169,6 +169,35 @@ Project-level overrides are read from `zcode.json` or `.zcode/config.json` in
 the working directory. Running `/model` does not call the provider, so it is a
 safe configuration check before the first prompt.
 
+### Browser Use in the CLI
+
+The CLI automatically enables the headless Chromium backend for TUI, `--prompt`,
+`--print`, and `--target` sessions when no explicit `--browser-use` is provided.
+This allows the `browser-use` plugin (e.g., `browser-use:control-browser`) to work
+seamlessly without additional flags:
+
+```bash
+zcode
+zcode --prompt 'Use $browser-use:control-browser to inspect https://example.com'
+```
+
+To disable automatic Browser Use injection, explicitly pass `--browser-use`:
+
+```bash
+zcode --browser-use=persistent tui
+```
+
+Or set the environment variable:
+
+```bash
+ZCODE_BROWSER_USE=persistent zcode
+```
+
+Valid values for `--browser-use` are `headless` (default for CLI) and `persistent`.
+The launcher never injects Browser Use into management commands (`plugins`, `skills`,
+`doctor`, `app-server`, etc.). Existing sessions must be restarted for changes to
+take effect.
+
 ### Background agents
 
 Long-running Agent calls automatically detach from the foreground turn after
